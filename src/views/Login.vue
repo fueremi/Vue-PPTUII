@@ -31,9 +31,9 @@
             <button type="button" @click="signIn" class="btn btn-primary">
               Sign In
             </button>
-            <button type="button" class="btn btn-outline-primary">
+            <router-link type="button" to="/register" class="btn btn-outline-primary">
               Register
-            </button>
+            </router-link>
           </div>
         </div>
       </form>
@@ -47,6 +47,7 @@
 
 <script>
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: "Login",
@@ -86,7 +87,6 @@ export default {
     },
 
     async signIn() {
-
       // ? Validasi email kosong
       if ( this.email === '' ){
         this.$toast.open({
@@ -152,7 +152,8 @@ export default {
 
       const data = await this.getAccount(this.email, this.password);
       if (data.data.data.pptuii_user.length >= 1) {
-        // TODO => Toast => Success => Login succeed
+
+        // ? Toast success
         this.$toast.open({
           message: `
             <p class="text-center">
@@ -165,7 +166,20 @@ export default {
           position: "top",
           // all of other options may go here
         });
+        // ? End of toast success
+
+        // ? Set session
+        const dataSession = {
+          id: uuidv4(),
+          user_id: data.data.data.pptuii_user[0].id
+        }
+        await this.$store.dispatch('setSession', dataSession)
+        // ? End of set session
+
+        // ? Change route to '/'
         await this.$router.push({ path: "/" });
+        // ? End of change route to '/
+
       } else if (data.data.data.pptuii_user.length < 1) {
         // TODO => Toast => Warning => Error when data kosong
         this.$toast.open({
@@ -183,6 +197,19 @@ export default {
         })
       } else {
         // TODO => Toast => Danger => Error when because system
+        this.$toast.open({
+          message: `
+            <p class="text-center">
+              <b>Something wrong!</b>
+            </p>
+            <hr/>
+            <p>
+              There's something wrong in our application, please contact our Support!
+            </p>
+          `,
+          type: "error",
+          position: "top",
+        })
       }
     },
   },

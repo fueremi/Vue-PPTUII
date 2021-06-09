@@ -13,6 +13,12 @@ export default {
   name: 'Home',
   components: {
     HelloWorld
+  },
+  created(){
+    console.log(this.$store.state.session);
+    if( this.$store.state.session.id === '' ){
+      this.$router.push('/login')
+    }
   }
 }
 </script>
