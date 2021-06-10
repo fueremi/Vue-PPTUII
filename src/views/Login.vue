@@ -31,7 +31,11 @@
             <button type="button" @click="signIn" class="btn btn-primary">
               Sign In
             </button>
-            <router-link type="button" to="/register" class="btn btn-outline-primary">
+            <router-link
+              type="button"
+              to="/register"
+              class="btn btn-outline-primary"
+            >
               Register
             </router-link>
           </div>
@@ -39,7 +43,7 @@
       </form>
     </div>
 
-    <footer>
+    <footer class="my-3">
       Copyright &copy; Universitas Islam Indonesia | 2021
     </footer>
   </div>
@@ -47,7 +51,7 @@
 
 <script>
 import axios from "axios";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "Login",
@@ -88,7 +92,7 @@ export default {
 
     async signIn() {
       // ? Validasi email kosong
-      if ( this.email === '' ){
+      if (this.email === "") {
         this.$toast.open({
           message: `
             <div class="text-dark">
@@ -103,13 +107,17 @@ export default {
           `,
           type: "warning",
           position: "top",
-        })
-        return
+        });
+        return;
       }
       // ? End of Validasi email kosong
 
       // ? Validasi format email
-      if ( !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(this.email))  ){
+      if (
+        !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+          this.email
+        )
+      ) {
         this.$toast.open({
           message: `
             <div class="text-dark">
@@ -124,13 +132,13 @@ export default {
           `,
           type: "warning",
           position: "top",
-        })
-        return
+        });
+        return;
       }
       // ? End of validasi format email
 
       // ? Validasi password kosong
-      if ( this.password === '' ){
+      if (this.password === "") {
         this.$toast.open({
           message: `
             <div class="text-dark">
@@ -145,14 +153,13 @@ export default {
           `,
           type: "warning",
           position: "top",
-        })
-        return
+        });
+        return;
       }
       // ? End of Validasi email kosong
 
       const data = await this.getAccount(this.email, this.password);
       if (data.data.data.pptuii_user.length >= 1) {
-
         // ? Toast success
         this.$toast.open({
           message: `
@@ -171,15 +178,14 @@ export default {
         // ? Set session
         const dataSession = {
           id: uuidv4(),
-          user_id: data.data.data.pptuii_user[0].id
-        }
-        await this.$store.dispatch('setSession', dataSession)
+          user_id: data.data.data.pptuii_user[0].id,
+        };
+        await this.$store.dispatch("setSession", dataSession);
         // ? End of set session
 
         // ? Change route to '/'
         await this.$router.push({ path: "/" });
         // ? End of change route to '/
-
       } else if (data.data.data.pptuii_user.length < 1) {
         // TODO => Toast => Warning => Error when data kosong
         this.$toast.open({
@@ -194,7 +200,7 @@ export default {
           `,
           type: "error",
           position: "top",
-        })
+        });
       } else {
         // TODO => Toast => Danger => Error when because system
         this.$toast.open({
@@ -209,9 +215,14 @@ export default {
           `,
           type: "error",
           position: "top",
-        })
+        });
       }
     },
+  },
+  created() {
+    if (this.$store.state.session.id) {
+      this.$router.push("/");
+    }
   },
 };
 </script>
