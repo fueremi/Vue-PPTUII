@@ -35,6 +35,7 @@ export default {
             id
             psikolog_id
             user_id
+            status
           }
         }
       `;
@@ -50,6 +51,7 @@ export default {
       Swal.fire({
         title: "<strong>Jadwal Pemeriksaan</strong>",
         icon: "info",
+        width: '48rem',
         html: `
           <table class="table">
             <thead>
@@ -58,6 +60,7 @@ export default {
                 <th scope="col">Jenis Layanan</th>
                 <th scope="col">Tanggal</th>
                 <th scope="col">Jam</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -66,8 +69,9 @@ export default {
               <tr>
                 <th scope="row">${index+1}</th>
                 <td>${data.examination_type}</td>
-                <td>${moment(this.datetimeEmpty).format("dddd, MMM Do YY")}</td>
-                <td>${moment(this.datetimeEmpty).format("h:mm a")}</td>
+                <td>${moment(data.datetimeEmpty).format("dddd, MMM Do YY")}</td>
+                <td>${moment(data.datetimeEmpty).format("h:mm a")}</td>
+                <td> ${  data.status ? 'Waiting' : 'Done'} </td>
               </tr>
               `
             )}
@@ -75,10 +79,6 @@ export default {
           </table>
           `,
         showCloseButton: true,
-        showCancelButton: true,
-        focusConfirm: false,
-        confirmButtonText: 'Great!',
-        cancelButtonText: 'Close',
       });
     },
   },
