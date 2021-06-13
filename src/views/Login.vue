@@ -3,7 +3,9 @@
     class="container d-flex flex-column min-vh-100 justify-content-center align-items-center"
   >
     <div class="text-center mb-5 pb-5">
-      <img src="../assets/pptuii.png" height="300" alt="" />
+      <router-link to="/">
+        <img src="../assets/pptuii.png" height="300" alt="" />
+      </router-link>
       <h3>Login</h3>
       <form class="row mt-3 g-3 text-center">
         <div class="col-md-4">
@@ -78,6 +80,7 @@ export default {
             last_name
             password
             phone_number
+            role
           }
         }
       `;
@@ -184,7 +187,13 @@ export default {
         // ? End of set session
 
         // ? Change route to '/'
-        await this.$router.push({ path: "/" });
+        if ( data.data.data.pptuii_user[0].role === 1){
+          await this.$router.push({ path: "/" });
+        } else if ( data.data.data.pptuii_user[0].role === 2){
+          await this.$router.push({ path: "/psikolog/"})
+        } else {
+          await this.$router.push('admin')
+        }
         // ? End of change route to '/
       } else if (data.data.data.pptuii_user.length < 1) {
         // TODO => Toast => Warning => Error when data kosong

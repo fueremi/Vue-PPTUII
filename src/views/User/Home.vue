@@ -1,19 +1,7 @@
 <template>
   <div class="home container my-3">
     <div class="container-fluid">
-      <a class="navbar-brand fs-4 text-dark text-wrap" href="#">
-        <img
-          src="../assets/pptuii.png"
-          alt=""
-          width="100"
-          class="d-inline-block align-middle"
-        />
-      </a>
-      <nav class="nav mt-5 fs-4 text-start fw-bold">
-        <router-link class="nav-link active" aria-current="page" to="/">Profile</router-link>
-        <router-link class="nav-link" to="/services">Service</router-link>
-        <a class="nav-link" href="#">Contact</a>
-      </nav>
+      <Navbar />
       <div class="row mt-5">
         <div class="col-md-6">
           <p style="text-align: justify" class="fs-6">
@@ -45,7 +33,7 @@
           </p>
         </div>
         <div class="col-md-6 text-center">
-          <img src="../assets/pptuii.png" alt="" width="350">
+          <img src="../../assets/pptuii.png" alt="" width="350">
           <p class="text-center fst-italic d-inline-block w-50">
             Jasa layanan psikologi yang ilmiah dan professional yang berlandaskan pada nilai-nilai Islami yang holistik
           </p>
@@ -57,30 +45,17 @@
 
 <script>
 // @ is an alias to /src
+import Navbar from '@/components/Navbar'
 
 export default {
   name: "Home",
-  components: {},
-  // created() {
-  //   if (this.$store.state.session.id === "") {
-  //     this.$router.push("/login");
-  //   }
-  // },
+  components: {
+    Navbar
+  },
+  created() {
+    // if (this.$store.state.session.id === "") {
+    //   this.$router.push("/login");
+    // }
+  },
 };
 </script>
-
-<style>
-.nav-link {
-  color: rgb(15, 15, 15);
-  padding: 0;
-  margin-right: 10px;
-}
-
-.active {
-  border-bottom: 3px black solid;
-}
-
-.nav-link:hover {
-  color: #8f546e;
-}
-</style>

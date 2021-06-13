@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import HomeUser from '../views/User/Home.vue'
+import Pemeriksaan from '../views/User/Pemeriksaan.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Service from '../views/Service.vue'
@@ -11,7 +12,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: HomeUser
   },
   {
     path: '/services',
@@ -37,6 +38,11 @@ const routes = [
     name: 'Register',
     component: Register
   },
+  {
+    path: '/pemeriksaan/:jenis',
+    name: 'Pemeriksaan',
+    component: Pemeriksaan
+  }
 ]
 
 const router = new VueRouter({
