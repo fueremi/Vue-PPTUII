@@ -38,18 +38,45 @@
           <label for="exampleFormControlInput1" class="form-label"
             >Jenis Layanan</label
           >
-          <select class="form-select" aria-label="Default select example" v-model="jenisPemeriksaan">
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            v-model="jenisPemeriksaan"
+          >
             <option selected>Silahkan pilih jenis layanan</option>
-            <option value="lo-rs">Layanan Organisasi - Rekrutment & Seleksi</option>
-            <option value="lo-apr">Layanan Organisasi - Assessment / Potensial Review</option>
-            <option value="lo-pso">Layanan Organisasi - Pengembangan Sistem Organisasi</option>
-            <option value="lo-pps">Layanan Organisasi - Pelatihan Pengembangan SDM</option>
-            <option value="lik-ki">Layanan Individu & Keluarga - Konseling Individu</option>
-            <option value="lik-kk">Layanan Individu & Keluarga - Konseling Keluarga</option>
-            <option value="lik-pk">Layanan Individu & Keluarga - Penguatan Keluarga</option>
-            <option value="lik-pmbs">Layanan Individu & Keluarga - Penelusuran Minat & Bakat Siswa</option>
-            <option value="lik-pkp">Layanan Individu & Keluarga - Pendampingan Karier/ Penjurusan</option>
-            <option value="lik-pkm">Layanan Individu & Keluarga - Peningkatan Kualitas Masyarakat</option>
+            <option value="lo-rs"
+              >Layanan Organisasi - Rekrutment & Seleksi</option
+            >
+            <option value="lo-apr"
+              >Layanan Organisasi - Assessment / Potensial Review</option
+            >
+            <option value="lo-pso"
+              >Layanan Organisasi - Pengembangan Sistem Organisasi</option
+            >
+            <option value="lo-pps"
+              >Layanan Organisasi - Pelatihan Pengembangan SDM</option
+            >
+            <option value="lik-ki"
+              >Layanan Individu & Keluarga - Konseling Individu</option
+            >
+            <option value="lik-kk"
+              >Layanan Individu & Keluarga - Konseling Keluarga</option
+            >
+            <option value="lik-pk"
+              >Layanan Individu & Keluarga - Penguatan Keluarga</option
+            >
+            <option value="lik-pmbs"
+              >Layanan Individu & Keluarga - Penelusuran Minat & Bakat
+              Siswa</option
+            >
+            <option value="lik-pkp"
+              >Layanan Individu & Keluarga - Pendampingan Karier/
+              Penjurusan</option
+            >
+            <option value="lik-pkm"
+              >Layanan Individu & Keluarga - Peningkatan Kualitas
+              Masyarakat</option
+            >
             <option value="oa">Online Assessment</option>
           </select>
         </div>
@@ -65,8 +92,8 @@
 import { Datetime } from "vue-datetime";
 import "vue-datetime/dist/vue-datetime.css";
 import Swal from "sweetalert2";
-import moment from "moment"
-import axios from 'axios'
+import moment from "moment";
+import axios from "axios";
 
 export default {
   name: "Pemeriksaan",
@@ -76,18 +103,18 @@ export default {
   data() {
     return {
       datetimeEmpty: "",
-      jenisPemeriksaan: this.$route.params.jenis
+      jenisPemeriksaan: this.$route.params.jenis,
     };
   },
   computed: {
     minDatetime() {
-      const event = new Date(Date.now())
-      return event.toISOString()
-    }
+      const event = new Date(Date.now());
+      return event.toISOString();
+    },
   },
   methods: {
     onSubmit() {
-      if ( this.datetimeEmpty === ''){
+      if (this.datetimeEmpty === "") {
         this.$toast.open({
           message: `
             <p class="text-center">
@@ -100,16 +127,14 @@ export default {
           `,
           type: "error",
           position: "top",
-        })
-        return
+        });
+        return;
       }
-
 
       Swal.fire({
         title: "<strong>Periksa Kembali <br> Jenis & Jadwal Periksa</strong>",
         icon: "info",
-        html:
-          `
+        html: `
           <div class="row text-start">
             <div class="col-lg-3">
               Jenis
@@ -133,15 +158,33 @@ export default {
           `,
         showCancelButton: true,
         confirmButtonText: `Benar`,
-      });
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const newExamination = {
+            user_id: this.$store.state.session.user_id,
+            datetime: this.datetimeEmpty,
+            examination_type: this.jenisPemeriksaan,
+          };
+          this.addNewExamination(newExamination);
 
-      const newExamination = {
-        user_id: this.$store.state.session.user_id,
-        datetime: this.jenisPemeriksaan,
-        examination_type: this.datetimeEmpty
-      }
-      this.addNewExamination(newExamination)
-      
+          this.$toast.open({
+            message: `
+            <p class="text-center">
+              <b>Pemeriksaan berhasil dibuat!</b>
+            </p>
+            <hr/>
+            <p>Silahkan tunggu dari pihak PPT UII untuk memastikan jadwal anda</p>
+          `,
+            type: "success",
+            position: "top",
+            // all of other options may go here
+          });
+          this.$router.push("/");
+        } else {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
     },
 
     async addNewExamination(newExamination) {
@@ -162,7 +205,7 @@ export default {
         { query: API_QUERY },
         { headers: API_HEADERS }
       );
-    }
+    },
   },
   created() {
     if (this.$store.state.session.id === "") {
