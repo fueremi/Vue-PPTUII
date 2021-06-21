@@ -153,7 +153,7 @@ export default {
       };
       const API_QUERY = `
         mutation MyMutation {
-          insert_pptuii_user(objects: {email: "${newUser.email}", first_name: "${newUser.first_name}", gender: "${newUser.gender}", last_name: "${newUser.last_name}", password: "${newUser.password}", phone_number: "${newUser.phone_number}"}) {
+          insert_pptuii_user(objects: {email: "${newUser.email}", first_name: "${newUser.first_name}", gender: "${newUser.gender}", last_name: "${newUser.last_name}", password: "${newUser.password}", phone_number: "${newUser.phone_number}", role: 1}) {
             affected_rows
           }
         }
