@@ -109,6 +109,7 @@ export default {
   computed: {
     minDatetime() {
       const event = new Date(Date.now());
+      event.setDate(event.getDate()+1)
       return event.toISOString();
     },
   },
@@ -132,7 +133,7 @@ export default {
       }
 
       Swal.fire({
-        title: "<strong>Periksa Kembali <br> Jenis & Jadwal Periksa</strong>",
+        title: "<strong>Periksa Kembali <br> Jenis & Jadwal Layanan</strong>",
         icon: "info",
         html: `
           <div class="row text-start">

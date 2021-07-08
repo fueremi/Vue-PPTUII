@@ -1,6 +1,6 @@
 <template>
   <button class="btn btn-primary examinationToggleButton" @click="onClick">
-    Daftar Periksa
+    Cek Jadwal
     <span class="badge bg-light">
       {{ dataExam.data ? dataExam.data.data.pptuii_examination.length : "..." }}
     </span>
@@ -49,7 +49,7 @@ export default {
     },
     onClick() {
       Swal.fire({
-        title: "<strong>Jadwal Pemeriksaan</strong>",
+        title: "<strong>Jadwal Konseling</strong>",
         icon: "info",
         width: '48rem',
         html: `
@@ -68,9 +68,9 @@ export default {
               (data, index) => `
               <tr>
                 <th scope="row">${index+1}</th>
-                <td>${data.examination_type}</td>
-                <td>${moment(data.datetimeEmpty).format("dddd, MMM Do YY")}</td>
-                <td>${moment(data.datetimeEmpty).format("h:mm a")}</td>
+                <td class="text-start">${data.examination_type}</td>
+                <td class="text-start">${moment(data.datetime).locale('id').format("dddd, Do MMMM YY")}</td>
+                <td>${moment(data.datetime).locale('id').format("h:mm a")}</td>
                 <td> ${  data.status ? 'Waiting' : 'Done'} </td>
               </tr>
               `

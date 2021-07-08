@@ -5,6 +5,7 @@ import Pemeriksaan from '../views/User/Pemeriksaan.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Service from '../views/Service.vue'
+import Admin from '../views/Admin/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -42,6 +43,11 @@ const routes = [
     path: '/pemeriksaan/:jenis',
     name: 'Pemeriksaan',
     component: Pemeriksaan
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin
   }
 ]
 
