@@ -212,7 +212,7 @@ export default {
           );
 
           console.log(data);
-          this.dataExam = this.getAllExam();
+          this.dataExam = await this.getAllExam();
         } else {
           Swal.fire("Konfirmasi dibatalkan", "", "info");
         }
@@ -257,7 +257,7 @@ export default {
             );
 
             console.log(data);
-            this.dataExam = this.getAllExam();
+            this.dataExam = await this.getAllExam();
           }
         } else {
           Swal.fire("Konfirmasi dibatalkan", "", "info");
@@ -296,7 +296,7 @@ export default {
           );
 
           console.log(data);
-          this.dataExam = this.getAllExam();
+          this.dataExam = await this.getAllExam();
         } else {
           Swal.fire("Konfirmasi dibatalkan", "", "info");
         }

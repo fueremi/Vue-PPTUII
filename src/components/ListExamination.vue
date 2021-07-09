@@ -52,7 +52,7 @@ export default {
       Swal.fire({
         title: "<strong>Jadwal Konseling</strong>",
         icon: "info",
-        width: '72rem',
+        width: '90vw',
         html: `
           <table class="table">
             <thead>
