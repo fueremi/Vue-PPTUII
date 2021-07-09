@@ -30,6 +30,9 @@
       </div>
     </div>
     <div class="div mt-5">
+      <button class="btn my-3 text-success" @click="onRefresh()">
+        <i class="fas fa-sync"></i>
+      </button>
       <ol class="list-group list-group-numbered">
         <li
           class="list-group-item d-flex justify-content-between align-items-start"
@@ -80,12 +83,15 @@
             </div>
             {{ timeFormat(data.datetime) }}
           </div>
-          <a class="me-3" href="">
+          <button class="btn" @click="onSesuai(data.id)">
             <span class="badge bg-success rounded-pill">Sesuai</span>
-          </a>
-          <a href="">
+          </button>
+          <button class="btn" @click="onRescheduled(data.id)">
             <span class="badge bg-primary rounded-pill">Rescheduled</span>
-          </a>
+          </button>
+          <button class="btn" @click="onTolak(data.id)">
+            <span class="badge bg-danger rounded-pill">Tolak</span>
+          </button>
         </li>
       </ol>
     </div>
@@ -151,7 +157,7 @@ export default {
       };
       const API_QUERY = `
         query MyQuery {
-            pptuii_examination(order_by: {datetime: asc}) {
+            pptuii_examination(where: {status: {_eq: 1}}, order_by: {datetime: asc}) {
             admin_id
             datetime
             examination_type
@@ -174,6 +180,131 @@ export default {
 
       return data.data.data.pptuii_examination;
     },
+    async onSesuai(payload) {
+      Swal.fire({
+        title: "<strong>Konfirmasi Layanan!</strong>",
+        icon: "info",
+        html: `
+          <p>Apakah anda yakin ?</p>
+          `,
+        showCancelButton: true,
+        confirmButtonText: `Benar`,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const API_URL = "https://fueremi-hasura.herokuapp.com/v1/graphql";
+          const API_HEADERS = {
+            "Content-Type": "application/json",
+            "x-hasura-admin-secret": "18032405",
+          };
+          const API_QUERY = `
+                mutation MyMutation {
+                update_pptuii_examination(where: {id: {_eq: ${payload}}}, _set: {status: 4}) {
+                    affected_rows
+                }
+                }
+
+            `;
+          const data = await axios.post(
+            API_URL,
+            { query: API_QUERY },
+            { headers: API_HEADERS }
+          );
+
+          console.log(data);
+          this.dataExam = this.getAllExam();
+        } else {
+          Swal.fire("Konfirmasi dibatalkan", "", "info");
+        }
+      });
+    },
+    async onRescheduled(payload) {
+      Swal.fire({
+        title: "<strong>Konfirmasi Layanan!</strong>",
+        icon: "info",
+        html: `
+          <p>Apakah anda yakin rescheduled layanan?</p>
+          `,
+        showCancelButton: true,
+        confirmButtonText: `Benar`,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const { value: reason } = await Swal.fire({
+            title: "Masukkan alasan",
+            input: "textarea",
+            inputLabel: "Kenapa jadwal pasien di Rescheduled?",
+            inputPlaceholder: "...",
+          });
+
+          if (reason) {
+            const API_URL = "https://fueremi-hasura.herokuapp.com/v1/graphql";
+            const API_HEADERS = {
+              "Content-Type": "application/json",
+              "x-hasura-admin-secret": "18032405",
+            };
+            const API_QUERY = `
+                mutation MyMutation {
+                    update_pptuii_examination(where: {id: {_eq: ${payload}}}, _set: {reason: "${reason}", status: 2}) {
+                        affected_rows
+                    }
+                }
+              `;
+            const data = await axios.post(
+              API_URL,
+              { query: API_QUERY },
+              { headers: API_HEADERS }
+            );
+
+            console.log(data);
+            this.dataExam = this.getAllExam();
+          }
+        } else {
+          Swal.fire("Konfirmasi dibatalkan", "", "info");
+        }
+      });
+    },
+    async onTolak(payload) {
+      Swal.fire({
+        title: "<strong>Konfirmasi Tolak Layanan Pasien!</strong>",
+        icon: "info",
+        html: `
+          <p>Apakah anda yakin akan menolak ?</p>
+          `,
+        showCancelButton: true,
+        confirmButtonText: `Benar`,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const API_URL = "https://fueremi-hasura.herokuapp.com/v1/graphql";
+          const API_HEADERS = {
+            "Content-Type": "application/json",
+            "x-hasura-admin-secret": "18032405",
+          };
+          const API_QUERY = `
+                mutation MyMutation {
+                update_pptuii_examination(where: {id: {_eq: ${payload}}}, _set: {reason: "Jadwal untuk hari ini penuh", status: 3}) {
+                    affected_rows
+                }
+                }
+
+            `;
+          const data = await axios.post(
+            API_URL,
+            { query: API_QUERY },
+            { headers: API_HEADERS }
+          );
+
+          console.log(data);
+          this.dataExam = this.getAllExam();
+        } else {
+          Swal.fire("Konfirmasi dibatalkan", "", "info");
+        }
+      });
+    },
+    async onRefresh() {
+      this.dataExam = await this.getAllExam();
+    },
   },
   async created() {
     if (this.$store.state.session.id === "") {
@@ -181,6 +312,11 @@ export default {
     }
 
     this.dataExam = await this.getAllExam();
+  },
+  mounted() {
+    if (this.$store.state.session.id === "") {
+      this.$router.push("/login");
+    }
   },
 };
 </script>

@@ -36,6 +36,7 @@ export default {
             psikolog_id
             user_id
             status
+            reason
           }
         }
       `;
@@ -51,7 +52,7 @@ export default {
       Swal.fire({
         title: "<strong>Jadwal Konseling</strong>",
         icon: "info",
-        width: '48rem',
+        width: '72rem',
         html: `
           <table class="table">
             <thead>
@@ -61,17 +62,36 @@ export default {
                 <th scope="col">Tanggal</th>
                 <th scope="col">Jam</th>
                 <th scope="col">Status</th>
+                <th scope="col">Reason</th>
               </tr>
             </thead>
             <tbody>
             ${this.dataExam.data.data.pptuii_examination.map(
               (data, index) => `
-              <tr>
+                ${data.status === 1 ? '<tr>' : ''}
+                ${data.status === 2 ? '<tr class="table-warning">' : ''}
+                ${data.status === 3 ? '<tr class="table-danger">' : ''}
+                ${data.status === 4 ? '<tr class="table-success">' : ''}
                 <th scope="row">${index+1}</th>
-                <td class="text-start">${data.examination_type}</td>
+                ${data.examination_type === 'lo-rs' ? '<td class="text-start">Layanan Organisasi Rekrutment & Seleksi</td>' : ''}
+                ${data.examination_type === 'lo-apr' ? '<td class="text-start">Layanan Organisasi - Assessment / Potensial Review</td>' : ''}
+                ${data.examination_type === 'lo-pso' ? '<td class="text-start">Layanan Organisasi - Pelatihan Pengembangan SDM</td>' : ''}
+                ${data.examination_type === 'lo-pps' ? '<td class="text-start">Layanan Organisasi - Pelatihan Pengembangan SDM</td>' : ''}
+                ${data.examination_type === 'lik-ki' ? '<td class="text-start">Layanan Individu & Keluarga - Konseling Individu</td>' : ''}
+                ${data.examination_type === 'lik-kk' ? '<td class="text-start">Layanan Individu & Keluarga - Konseling Keluarga</td>' : ''}
+                ${data.examination_type === 'lik-pk' ? '<td class="text-start">Layanan Individu & Keluarga - Penguatan Keluarga</td>' : ''}
+                ${data.examination_type === 'lik-pmbs' ? '<td class="text-start">Layanan Individu & Keluarga - Penelusuran Minat & Bakat Siswa</td>' : ''}
+                ${data.examination_type === 'lik-pkp' ? '<td class="text-start">Layanan Individu & Keluarga - Pendampingan Karier/Penjurusan</td>' : ''}
+                ${data.examination_type === 'lik-pkm' ? '<td class="text-start">Layanan Individu & Keluarga - Peningkatan Kualitas Masyarakat</td>' : ''}
+                ${data.examination_type === 'oa' ? '<td>Online Assesment</td>' : ''}
                 <td class="text-start">${moment(data.datetime).locale('id').format("dddd, Do MMMM YY")}</td>
                 <td>${moment(data.datetime).locale('id').format("h:mm a")}</td>
-                <td> ${  data.status ? 'Waiting' : 'Done'} </td>
+                ${data.status === 1 ? '<td class="text-start">Waiting</td>' : ''}
+                ${data.status === 2 ? '<td class="text-start">Rescheduled</td>' : ''}
+                ${data.status === 3 ? '<td class="text-start">Ditolak</td>' : ''}
+                ${data.status === 4 ? '<td class="text-start">Diterima</td>' : ''}
+                ${data.reason === null ? '<td class="text-center">-</td>' : ''}
+                ${data.reason !== null ? '<td class="text-start">'+ data.reason +'</td>' : ''}
               </tr>
               `
             )}
