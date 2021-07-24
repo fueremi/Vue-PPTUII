@@ -5,10 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    session: {
-      id: '',
-      user_id: ''
-    }
+    session: null
   },
   mutations: {
     SET_SESSION(state, payload){
@@ -19,8 +16,5 @@ export default new Vuex.Store({
     setSession({commit}, payload){
       commit('SET_SESSION', payload)
     }
-  },
-  getters: {
-
   }
 })

@@ -6,8 +6,8 @@
       <router-link to="/">
         <img src="../assets/pptuii.png" height="300" alt="" />
       </router-link>
-      <h3>Login</h3>
-      <form class="row mt-3 g-3 text-center">
+      <h3>Login Pasien</h3>
+      <form class="row mt-3 g-3 text-center" @submit.prevent="onSubmit()">
         <div class="col-md-4">
           <label for="email" class="visually-hidden">Email</label>
           <input
@@ -30,7 +30,7 @@
         </div>
         <div class="col-md-4">
           <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" @click="signIn" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary">
               Sign In
             </button>
             <router-link
@@ -53,7 +53,7 @@
 
 <script>
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
+import Swal from "sweetalert2";
 
 export default {
   name: "Login",
@@ -64,23 +64,59 @@ export default {
     };
   },
   methods: {
-    async getAccount(email, password) {
-      const API_URL = "https://fueremi-hasura.herokuapp.com/v1/graphql";
+    async onSubmit() {
+      if (this.email === "" || this.password === "") {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Please provide your email & password",
+        });
+      }
+
+      const result = await this.signIn();
+
+      if (result.length < 1) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Your email and password didn't match",
+        });
+
+        this.email = "";
+        this.password = "";
+        return;
+
+      } else {
+        const params = {
+          id: result[0].id,
+          nama: result[0].nama,
+          email: result[0].email,
+          role: 'pasien'
+        }
+        await this.$store.dispatch('setSession', params)
+        Swal.fire({
+          icon: "success",
+          title: "Yeay! Login Berhasil",
+          html: `
+            Selamat datang <b class='text-capitalize'> ${result[0].nama} </b> <br>
+            Kamu otomatis dialihkan ke halaman utama
+          `,
+        });
+        this.$router.push({'name' : 'HomePasien'})
+      }
+    },
+    async signIn() {
+      const API_URL = "https://fathir-hasura.herokuapp.com/v1/graphql";
       const API_HEADERS = {
         "Content-Type": "application/json",
-        "x-hasura-admin-secret": "18032405",
+        "x-hasura-admin-secret": "3yYlj28KnyN4",
       };
       const API_QUERY = `
         query MyQuery {
-          pptuii_user(where: {email: {_eq: "${email}"}, password: {_eq: "${password}"}}) {
+          pptuii_pasien(where: {_and: {email: {_eq: "${this.email}"}, password: {_eq: "${this.password}"}}}) {
             email
-            first_name
-            gender
             id
-            last_name
-            password
-            phone_number
-            role
+            nama
           }
         }
       `;
@@ -90,148 +126,8 @@ export default {
         { headers: API_HEADERS }
       );
 
-      return data;
+      return data.data.data.pptuii_pasien;
     },
-
-    async signIn() {
-      // ? Validasi email kosong
-      if (this.email === "") {
-        this.$toast.open({
-          message: `
-            <div class="text-dark">
-              <p class="text-center">
-                <b>Email is Empty</b>
-              </p>
-              <hr/>
-              <p>
-                Please make sure you're already entered the email
-              </p>
-            </div>
-          `,
-          type: "warning",
-          position: "top",
-        });
-        return;
-      }
-      // ? End of Validasi email kosong
-
-      // ? Validasi format email
-      if (
-        !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
-          this.email
-        )
-      ) {
-        this.$toast.open({
-          message: `
-            <div class="text-dark">
-              <p class="text-center">
-                <b>Wrong format email!</b>
-              </p>
-              <hr/>
-              <p>
-                Please make sure you're already entered the correct email!
-              </p>
-            </div>
-          `,
-          type: "warning",
-          position: "top",
-        });
-        return;
-      }
-      // ? End of validasi format email
-
-      // ? Validasi password kosong
-      if (this.password === "") {
-        this.$toast.open({
-          message: `
-            <div class="text-dark">
-              <p class="text-center">
-                <b>Password is Empty</b>
-              </p>
-              <hr/>
-              <p>
-                Please make sure you're already entered the password
-              </p>
-            </div>
-          `,
-          type: "warning",
-          position: "top",
-        });
-        return;
-      }
-      // ? End of Validasi email kosong
-
-      const data = await this.getAccount(this.email, this.password);
-      if (data.data.data.pptuii_user.length >= 1) {
-        // ? Toast success
-        this.$toast.open({
-          message: `
-            <p class="text-center">
-              <b >Logged In!</b>
-            </p>
-            <hr/>
-            <p>Welcome to PPT UII, <b>${data.data.data.pptuii_user[0].first_name} ${data.data.data.pptuii_user[0].last_name}</b>. You're directing to home page!</p>
-          `,
-          type: "success",
-          position: "top",
-          // all of other options may go here
-        });
-        // ? End of toast success
-
-        // ? Set session
-        const dataSession = {
-          id: uuidv4(),
-          user_id: data.data.data.pptuii_user[0].id,
-        };
-        await this.$store.dispatch("setSession", dataSession);
-        // ? End of set session
-
-        // ? Change route to '/'
-        if ( data.data.data.pptuii_user[0].role === 1){
-          await this.$router.push({ path: "/" });
-        } else if ( data.data.data.pptuii_user[0].role === 2){
-          await this.$router.push({ path: "/psikolog/"})
-        } else {
-          await this.$router.push('admin')
-        }
-        // ? End of change route to '/
-      } else if (data.data.data.pptuii_user.length < 1) {
-        // TODO => Toast => Warning => Error when data kosong
-        this.$toast.open({
-          message: `
-            <p class="text-center">
-              <b>Combination Email & Password is Incorrect</b>
-            </p>
-            <hr/>
-            <p>
-              Please make sure you're email and password is correct!
-            </p>
-          `,
-          type: "error",
-          position: "top",
-        });
-      } else {
-        // TODO => Toast => Danger => Error when because system
-        this.$toast.open({
-          message: `
-            <p class="text-center">
-              <b>Something wrong!</b>
-            </p>
-            <hr/>
-            <p>
-              There's something wrong in our application, please contact our Support!
-            </p>
-          `,
-          type: "error",
-          position: "top",
-        });
-      }
-    },
-  },
-  created() {
-    if (this.$store.state.session.id) {
-      this.$router.push("/");
-    }
   },
 };
 </script>

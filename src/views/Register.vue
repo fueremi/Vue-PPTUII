@@ -2,57 +2,49 @@
   <div
     class="container d-flex flex-column min-vh-100 justify-content-center align-items-center"
   >
-    <div class="text-center mb-5 pb-5">
+    <div class="text-center">
       <img src="../assets/pptuii.png" height="300" alt="" />
-      <h3>Register</h3>
-      <form @submit="onSubmit">
+      <h3>Register Pasien</h3>
+      <form @submit.prevent="onSubmit()">
         <div class="row g-3 text-start mt-3">
-          <div class="col-md-6">
+          <div class="col-md-8">
             <input
               type="text"
               class="form-control"
-              placeholder="First name"
-              aria-label="First name"
-              v-model="user.first_name"
+              placeholder="Nama Lengkap..."
+              aria-label="Nama Lengkap"
+              v-model="nama"
             />
           </div>
-          <div class="col-md-6">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Last name"
-              aria-label="Last name"
-              v-model="user.last_name"
-            />
-          </div>
-        </div>
-        <div class="row g-3 text-start mt-1">
-          <div class="col-md-3">
+          <div class="col-md-4">
             <select
               class="form-select"
-              aria-label="Default select example"
-              v-model="user.gender"
+              aria-label="Pilih Jenis Kelamin"
+              v-model="jenis_kelamin"
             >
+              <option value="">Pilih Jenis Kelamin</option>
               <option value="l">Laki-Laki</option>
               <option value="p">Perempuan</option>
             </select>
           </div>
-          <div class="col-md-4">
+        </div>
+        <div class="row g-3 text-start mt-1">
+          <div class="col-md-6">
             <input
               type="text"
               class="form-control"
-              placeholder="Phone Number"
-              aria-label="Phone Number"
-              v-model="user.phone_number"
+              placeholder="Handphone..."
+              aria-label="Handphone"
+              v-model="hp"
             />
           </div>
-          <div class="col-md-5">
+          <div class="col-md-6">
             <input
               type="text"
               class="form-control"
-              placeholder="Email"
+              placeholder="Email..."
               aria-label="Email"
-              v-model="user.email"
+              v-model="email"
             />
           </div>
         </div>
@@ -61,18 +53,18 @@
             <input
               type="password"
               class="form-control"
-              placeholder="Password"
+              placeholder="Password..."
               aria-label="Password"
-              v-model="user.password"
+              v-model="password"
             />
           </div>
           <div class="col-md-6">
             <input
               type="password"
               class="form-control"
-              placeholder="Confirm Password"
+              placeholder="Confirm Password..."
               aria-label="Confirm Password"
-              v-model="user.confirm_password"
+              v-model="confirm_password"
             />
           </div>
         </div>
@@ -92,104 +84,59 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 export default {
   name: "Register",
   data() {
     return {
-      user: {
-        first_name: "",
-        last_name: "",
-        gender: "l",
-        phone_number: "",
-        email: "",
-        password: "",
-        confirm_password: "",
-      },
+      nama: '',
+      jenis_kelamin: '',
+      hp: '',
+      email: '',
+      password: '',
+      confirm_password: ''
     };
   },
   methods: {
     onSubmit() {
-      if (this.user.password !== this.user.confirm_password) {
-        this.$toast.open({
-          message: `
-            <p class="text-center">
-              <b>Password didn't matches</b>
-            </p>
-            <hr/>
-            <p>
-              Please make sure you're enter password correctly!
-            </p>
-          `,
-          type: "error",
-          position: "top",
+      // ? Validasi form
+      if (this.nama === '' || this.jenis_kelamin === '' || this.hp === '' || this.email === '' || this.password === '' || this.confirm_password === ''){
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Please input all field",
         });
-
-        this.user = {
-          gender: this.user.gender,
-          password: "",
-          confirm_password: "",
-        };
-
+        return
+      }
+      if (!(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(this.email))) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops Something Went Wrong...",
+          text: "Please provide valid email",
+        });
+        this.email = ''
+        return
+      }
+      if (this.password !== this.confirm_password) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Password and Confirm Password didn't match",
+        });
+        this.password = ''
+        this.confirm_password = ''
         return;
       }
 
-      const newUser = {
-        first_name: this.user.first_name,
-        last_name: this.user.last_name,
-        gender: this.user.gender,
-        phone_number: this.user.phone_number,
-        email: this.user.email,
-        password: this.user.password,
-      };
-      console.log(newUser);
-      this.addNewUser(newUser);
-    },
-    async addNewUser(newUser) {
-      const API_URL = "https://fueremi-hasura.herokuapp.com/v1/graphql";
-      const API_HEADERS = {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": "18032405",
-      };
-      const API_QUERY = `
-        mutation MyMutation {
-          insert_pptuii_user(objects: {email: "${newUser.email}", first_name: "${newUser.first_name}", gender: "${newUser.gender}", last_name: "${newUser.last_name}", password: "${newUser.password}", phone_number: "${newUser.phone_number}", role: 1}) {
-            affected_rows
-          }
-        }
-      `;
-      const data = await axios.post(
-        API_URL,
-        { query: API_QUERY },
-        { headers: API_HEADERS }
-      );
+      // ? Panggil fungsi submit ke database
 
-      console.log(data);
-      this.user = {
-        first_name: "",
-        last_name: "",
-        gender: "l",
-        phone_number: "",
-        email: "",
-        password: "",
-        confirm_password: "",
-      };
 
-      this.$toast.open({
-        message: `
-            <p class="text-center">
-              <b >Account Created!</b>
-            </p>
-            <hr/>
-            <p>Please login to our application. Thank you</p>
-          `,
-        type: "success",
-        position: "top",
-        // all of other options may go here
-      });
-      this.$router.push("/login");
     },
-  },
+    submitPasienBaru() {
+      // TODO Buat API untuk input ke Database
+    }
+  }
 };
 </script>
 

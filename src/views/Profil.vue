@@ -33,7 +33,7 @@
           </p>
         </div>
         <div class="col-md-6 text-center">
-          <img src="../../assets/pptuii.png" alt="" width="350" />
+          <img src="../assets/pptuii.png" alt="" width="350" />
           <p class="text-center fst-italic d-inline-block w-50">
             Jasa layanan psikologi yang ilmiah dan professional yang
             berlandaskan pada nilai-nilai Islami yang holistik
@@ -41,33 +41,20 @@
         </div>
       </div>
     </div>
-    <List-Examination v-if="this.$store.state.session.id !== ''"/>
+    
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import Navbar from "@/components/Navbar";
-import ListExamination from "@/components/ListExamination";
+// import ListExamination from "@/components/ListExamination";
 
 export default {
   name: "Home",
   components: {
     Navbar,
-    'List-Examination': ListExamination
-  },
-  created() {
-    // if (this.$store.state.session.id === "") {
-    //   this.$router.push("/login");
-    // }
+    // 'List-Examination': ListExamination
   },
 };
 </script>
-
-<style scoped>
-.examinationToggleButton {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-}
-</style>

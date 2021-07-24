@@ -9,19 +9,21 @@
       />
     </a>
     <nav class="nav mt-5 fs-4 text-start fw-bold">
-      <router-link class="nav-link" aria-current="page" to="/"
+      <router-link class="nav-link" aria-current="page" :to="{ name: 'Profil' }"
         >Profil</router-link
       >
-      <router-link class="nav-link" to="/services">Layanan</router-link>
+      <router-link class="nav-link" :to="{ name: 'Layanan' }"
+        >Layanan</router-link
+      >
       <a class="nav-link" href="#">Kontak</a>
       <router-link
-        v-if="this.$store.state.session.id === ''"
+        v-if="this.$store.state.session === null"
         class="nav-link"
         to="/login"
         >Login</router-link
       >
       <a
-        v-if="this.$store.state.session.id !== ''"
+        v-if="this.$store.state.session !== null"
         class="nav-link"
         @click="logout"
         >Logout</a
@@ -48,8 +50,7 @@ export default {
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          this.$store.state.session.id = "";
-          this.$store.state.session.user_id = "";
+          this.$store.state.session = null;
           this.$toast.open({
             message: `
             <p class="text-center">
