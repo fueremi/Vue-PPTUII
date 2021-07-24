@@ -6,6 +6,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Service from '../views/Service.vue'
 import Admin from '../views/Admin/Home.vue'
+import HomePsikolog from '@/views/Psikolog/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -48,6 +49,11 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     component: Admin
+  },
+  {
+    path: '/psikolog',
+    name: 'Psikolog',
+    component: HomePsikolog
   }
 ]
 
