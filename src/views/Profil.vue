@@ -1,7 +1,7 @@
 <template>
   <div class="home container my-3">
     <div class="container-fluid">
-      <Navbar />
+      <HomeNavbar />
       <div class="row mt-5">
         <div class="col-md-6">
           <p style="text-align: justify" class="fs-6">
@@ -47,13 +47,13 @@
 
 <script>
 // @ is an alias to /src
-import Navbar from "@/components/Navbar";
+import HomeNavbar from "@/components/Home/Navbar";
 // import ListExamination from "@/components/ListExamination";
 
 export default {
   name: "Home",
   components: {
-    Navbar,
+    HomeNavbar,
     // 'List-Examination': ListExamination
   },
 };

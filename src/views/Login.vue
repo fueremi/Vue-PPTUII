@@ -1,76 +1,76 @@
 <template>
-  <div
-    class="container d-flex flex-column min-vh-100 justify-content-center align-items-center"
-  >
-    <div class="text-center mb-5 pb-5">
-      <router-link to="/">
-        <img src="../assets/pptuii.png" height="300" alt="" />
-      </router-link>
-      <h3>Login Pasien</h3>
-      <form class="row mt-3 g-3 text-center" @submit.prevent="onSubmit()">
-        <div class="col-md-4">
-          <label for="email" class="visually-hidden">Email</label>
-          <input
-            type="text"
-            class="form-control"
-            id="email"
-            placeholder="email@example.com"
-            v-model="email"
-          />
-        </div>
-        <div class="col-md-4">
-          <label for="password" class="visually-hidden">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            placeholder="Password"
-            v-model="password"
-          />
-        </div>
-        <div class="col-md-4">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="submit" class="btn btn-primary">
-              Sign In
-            </button>
-            <router-link
-              type="button"
-              to="/register"
-              class="btn btn-outline-primary"
-            >
-              Register
-            </router-link>
+  <div class="home container my-3">
+    <div class="container-fluid">
+      <Navbar />
+      <div class="row mt-5">
+        <div
+          class="d-flex flex-column justify-content-around align-items-center"
+        >
+          <div class="main w-25">
+            <h3 class="text-center">Login</h3>
+            <form class="mt-5" @submit.prevent="onSubmit()">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  placeholder="Masukkan username anda"
+                  v-model="username"
+                />
+              </div>
+              <div class="mb-2">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  placeholder="Masukkan password anda"
+                  v-model="password"
+                />
+              </div>
+              <small class="mb-3">
+                Belum punya akun ? Silahkan
+                <router-link :to="{ name: 'Register' }"
+                  ><b>Daftar Disini</b></router-link
+                >
+              </small>
+              <div class="mt-3">
+                <input type="submit" class="btn btn-primary" />
+              </div>
+            </form>
           </div>
         </div>
-      </form>
+      </div>
     </div>
-
-    <footer class="my-3">
-      Copyright &copy; Universitas Islam Indonesia | 2021
-    </footer>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import Navbar from "@/components/Home/Navbar";
 
 export default {
   name: "Login",
+  components: {
+    Navbar,
+  },
   data() {
     return {
-      email: "",
+      username: "",
       password: "",
     };
   },
   methods: {
     async onSubmit() {
-      if (this.email === "" || this.password === "") {
+      if (this.username === "" || this.password === "") {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Please provide your email & password",
+          text: "Tolong masukkan username dan password anda!",
         });
+        return;
       }
 
       const result = await this.signIn();
@@ -79,30 +79,50 @@ export default {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Your email and password didn't match",
+          text: "Username dan password anda tidak sesuai!",
         });
 
-        this.email = "";
+        this.username = "";
         this.password = "";
         return;
-
       } else {
-        const params = {
-          id: result[0].id,
-          nama: result[0].nama,
-          email: result[0].email,
-          role: 'pasien'
+        this.$store.dispatch("setSession", result[0]);
+
+        // ? Jika role pasien
+        if (this.$store.state.session.role === 1) {
+          Swal.fire({
+            icon: "success",
+            title: "Yeay! Login Berhasil",
+            html: `
+              Selamat datang <b class='text-capitalize'> ${result[0].up_rel[0].nama} </b> <br>
+              Kamu otomatis dialihkan ke halaman utama
+            `,
+          });
+          this.$router.push({ name: "HomePasien" });
+          return;
+
+          // ? Jika role admin
+        } else if (this.$store.state.session.role === 2) {
+          Swal.fire({
+            icon: "success",
+            title: "Yeay! Login Berhasil",
+            html: `
+              Selamat datang <b class='text-capitalize'> ${result[0].ua_rel[0].nama} </b> <br>
+              Kamu otomatis dialihkan ke halaman utama
+            `,
+          });
+          this.$router.push({ name: "HomeAdmin" });
+          return;
+        } else if (this.$store.state.session.role === 3) {
+          console.log("Psikolog");
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            html:
+              "Terjadi kesalahan dengan aplikasi, <br> Silahkan refresh halaman ini!",
+          });
         }
-        await this.$store.dispatch('setSession', params)
-        Swal.fire({
-          icon: "success",
-          title: "Yeay! Login Berhasil",
-          html: `
-            Selamat datang <b class='text-capitalize'> ${result[0].nama} </b> <br>
-            Kamu otomatis dialihkan ke halaman utama
-          `,
-        });
-        this.$router.push({'name' : 'HomePasien'})
       }
     },
     async signIn() {
@@ -112,13 +132,20 @@ export default {
         "x-hasura-admin-secret": "3yYlj28KnyN4",
       };
       const API_QUERY = `
-        query MyQuery {
-          pptuii_pasien(where: {_and: {email: {_eq: "${this.email}"}, password: {_eq: "${this.password}"}}}) {
-            email
-            id
+      query MyQuery {
+        pptuii_user(where: {_and: {username: {_eq: "${this.username}"}, password: {_eq: "${this.password}"}}}) {
+          id
+          role
+          username
+          email
+          up_rel {
+            nama
+          }
+          ua_rel {
             nama
           }
         }
+      }
       `;
       const data = await axios.post(
         API_URL,
@@ -126,29 +153,19 @@ export default {
         { headers: API_HEADERS }
       );
 
-      return data.data.data.pptuii_pasien;
+      return data.data.data.pptuii_user;
     },
   },
 };
 </script>
 
 <style scoped>
-.login {
-  height: 100vh;
-}
-
-.btn-primary {
-  background-color: #8f546e !important;
-  border-color: #8f546e !important;
-}
-
-.btn-outline-primary {
+.main a {
+  text-decoration: none;
   color: #8f546e;
-  border-color: #8f546e;
 }
 
-.btn-outline-primary:hover {
-  background-color: #8f546e !important;
-  color: white;
+.main a:hover {
+  opacity: 0.75;
 }
 </style>

@@ -1,14 +1,20 @@
 <template>
   <div>
-    <a class="navbar-brand fs-4 text-dark text-wrap" href="#">
+    <router-link
+      class="navbar-brand fs-4 text-dark text-wrap"
+      :to="{ name: 'Home' }"
+    >
       <img
         src="../assets/pptuii.png"
         alt=""
         width="100"
         class="d-inline-block align-middle"
       />
-    </a>
+    </router-link>
     <nav class="nav mt-5 fs-4 text-start fw-bold">
+      <a class="nav-link" aria-current="page"
+        >Welcome {{ this.$store.state.session.up_rel[0].nama }} </a
+      >
       <router-link class="nav-link" aria-current="page" :to="{ name: 'Profil' }"
         >Profil</router-link
       >

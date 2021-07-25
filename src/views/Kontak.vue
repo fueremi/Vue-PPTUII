@@ -2,6 +2,9 @@
   <div class="home container my-3">
     <div class="container-fluid">
       <HomeNavbar />
+      <div class="row mt-5">
+        <h3>Kontak</h3>
+      </div>
     </div>
   </div>
 </template>
@@ -10,14 +13,9 @@
 import HomeNavbar from '@/components/Home/Navbar'
 
 export default {
-name: 'HomePasien',
-components: {
-  HomeNavbar
-}
-
+  name: 'Kontak',
+  components: {
+    HomeNavbar,
+  }
 }
 </script>
-
-<style>
-
-</style>

@@ -2,11 +2,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Profil from '@/views/Profil'
 import Layanan from '@/views/Layanan'
+import Kontak from '@/views/Kontak'
 import Login from '@/views/Login'
-import Register from '../views/Register.vue' 
-import HomePasien from '../views/Pasien/Home.vue'
+import Register from '@/views/Register' 
+import HomePasien from '@/views/Pasien/Home'
+import HomeAdmin from '@/views/Admin/Home.vue'
 import Pemeriksaan from '../views/Pasien/Pemeriksaan.vue'
-import HomeAdmin from '../views/Admin/Home.vue'
 import HomePsikolog from '@/views/Psikolog/Home.vue'
 
 Vue.use(VueRouter)
@@ -23,6 +24,11 @@ const routes = [
     component: Layanan
   },
   {
+    path: '/kontak',
+    name: 'Kontak',
+    component: Kontak
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login
@@ -31,6 +37,16 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+    path: '/pasien/:jenis?',
+    name: 'HomePasien',
+    component: HomePasien
+  },
+  {
+    path: '/admin/',
+    name: 'HomeAdmin',
+    component: HomeAdmin
   }
   // {
   //   path: '/services',
