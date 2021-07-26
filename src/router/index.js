@@ -7,8 +7,8 @@ import Login from '@/views/Login'
 import Register from '@/views/Register' 
 import HomePasien from '@/views/Pasien/Home'
 import HomeAdmin from '@/views/Admin/Home.vue'
-import Pemeriksaan from '../views/Pasien/Pemeriksaan.vue'
 import HomePsikolog from '@/views/Psikolog/Home.vue'
+import Pemeriksaan from '../views/Pasien/Pemeriksaan.vue'
 
 Vue.use(VueRouter)
 
@@ -47,6 +47,11 @@ const routes = [
     path: '/admin/',
     name: 'HomeAdmin',
     component: HomeAdmin
+  },
+  {
+    path: '/psikolog',
+    name: 'HomePsikolog',
+    component: HomePsikolog
   }
   // {
   //   path: '/services',

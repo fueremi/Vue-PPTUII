@@ -141,7 +141,40 @@ export default {
               Jenis
             </div>
             <div class="col-lg-9">
-              : ${this.jenisPemeriksaan}
+              : ${this.jenisPemeriksaan === 'lo-rs' ? 'Layanan Organisasi Rekrutment & Seleksi' : null}
+              <span v-if="data.examination_type === 'lo-apr'"
+                >Layanan Organisasi - Assessment / Potensial Review</span
+              >
+              <span v-if="data.examination_type === 'lo-pso'"
+                >Layanan Organisasi - Pengembangan Sistem Organisasi</span
+              >
+              <span v-if="data.examination_type === 'lo-pps'"
+                >Layanan Organisasi - Pelatihan Pengembangan SDM</span
+              >
+              <span v-if="data.examination_type === 'lik-ki'"
+                >Layanan Individu & Keluarga - Konseling Individu</span
+              >
+              <span v-if="data.examination_type === 'lik-kk'"
+                >Layanan Individu & Keluarga - Konseling Keluarga</span
+              >
+              <span v-if="data.examination_type === 'lik-pk'"
+                >Layanan Individu & Keluarga - Penguatan Keluarga</span
+              >
+              <span v-if="data.examination_type === 'lik-pmbs'"
+                >Layanan Individu & Keluarga - Penelusuran Minat & Bakat
+                Siswa</span
+              >
+              <span v-if="data.examination_type === 'lik-pkp'"
+                >Layanan Individu & Keluarga - Pendampingan Karier/
+                Penjurusan</span
+              >
+              <span v-if="data.examination_type === 'lik-pkm'"
+                >Layanan Individu & Keluarga - Peningkatan Kualitas
+                Masyarakat</span
+              >
+              <span v-if="data.examination_type === 'oa'"
+                >Online Assessment</span
+              >
             </div>
             <div class="col-lg-3">
               Tanggal
@@ -215,21 +248,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.my-class {
-  border: none;
-  padding: 3px;
-}
-
-.btn-primary {
-  background-color: #8f546e;
-  border-color: #fff;
-}
-
-.btn-primary:hover {
-  color: #8f546e;
-  background-color: #fff;
-  border-color: #8f546e;
-}
-</style>

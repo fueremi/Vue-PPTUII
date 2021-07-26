@@ -95,7 +95,7 @@ export default {
             title: "Yeay! Login Berhasil",
             html: `
               Selamat datang <b class='text-capitalize'> ${result[0].up_rel[0].nama} </b> <br>
-              Kamu otomatis dialihkan ke halaman utama
+              Kamu otomatis dialihkan ke <b class='text-capitalize'>halaman utama</b>
             `,
           });
           this.$router.push({ name: "HomePasien" });
@@ -108,13 +108,22 @@ export default {
             title: "Yeay! Login Berhasil",
             html: `
               Selamat datang <b class='text-capitalize'> ${result[0].ua_rel[0].nama} </b> <br>
-              Kamu otomatis dialihkan ke halaman utama
+              Kamu otomatis dialihkan ke <b class='text-capitalize'>halaman utama</b>
             `,
           });
           this.$router.push({ name: "HomeAdmin" });
           return;
         } else if (this.$store.state.session.role === 3) {
-          console.log("Psikolog");
+          Swal.fire({
+            icon: "success",
+            title: "Yeay! Login Berhasil",
+            html: `
+              Selamat datang <b class='text-capitalize'> ${result[0].ups_rel[0].nama} </b> <br>
+              Kamu otomatis dialihkan ke <b class='text-capitalize'>halaman utama</b>
+            `,
+          });
+          this.$router.push({ name: "HomePsikolog" });
+          return;
         } else {
           Swal.fire({
             icon: "error",
@@ -140,9 +149,15 @@ export default {
           email
           up_rel {
             nama
+            id
           }
           ua_rel {
             nama
+            id
+          }
+          ups_rel {
+            nama
+            id
           }
         }
       }

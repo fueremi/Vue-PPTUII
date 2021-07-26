@@ -33,7 +33,19 @@
           this.$store.state.session.ua_rel[0].nama
         }}</b></router-link
       >
-      <router-link class="nav-link" :to="{ name: 'Profil' }"
+      <router-link
+        v-if="
+          this.$store.state.session !== null &&
+            this.$store.state.session.role === 3
+        "
+        class="nav-link"
+        :to="{ name: 'HomePsikolog' }"
+        >Welcome,
+        <b class="text-capitalize">{{
+          this.$store.state.session.ups_rel[0].nama
+        }}</b></router-link
+      >
+      <router-link v-if="this.$store.state.session === null" class="nav-link" :to="{ name: 'Profil' }"
         >Profil</router-link
       >
       <router-link class="nav-link" :to="{ name: 'Layanan' }"
