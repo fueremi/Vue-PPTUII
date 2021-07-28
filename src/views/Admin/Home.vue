@@ -213,7 +213,7 @@
                         <p><strong>Pemeriksaan Rescheduled!</strong></p>
                       </div>
                       <div v-else-if="pemeriksaan.status === 3" class="m-3">
-                        <p><strong>Pemeriksaan Canceled!</strong></p>
+                        <p><strong>Pemeriksaan Canceled oleh <b>Pasien</b>!</strong></p>
                       </div>
                       <div v-else-if="pemeriksaan.status === 4" class="m-3">
                         <p><strong>Pemeriksaan Approved!</strong></p>
@@ -362,34 +362,6 @@ export default {
         }
       });
     },
-    // onReject(params) {
-    //   Swal.fire({
-    //     title: "Pemeriksaan",
-    //     icon: "info",
-    //     width: "50vw",
-    //     html: `<p>Apakah anda yakin akan <strong class="text-danger">Tolak</strong> jadwal pemeriksaan ?</p>
-    //       `,
-    //     showCancelButton: true,
-    //     confirmButtonText: `Benar`,
-    //   }).then(async (result) => {
-    //     /* Read more about isConfirmed, isDenied below */
-    //     if (result.isConfirmed) {
-    //       params = { ...params, ...{ status: 3, alasan: 'Mohon maaf, Jadwal pemeriksaan hari ini Penuh! Silahkan pilih jadwal di tanggal lain. Terima kasih' } };
-    //       const resultUpdatePemeriksaan = await this.updatePemeriksaan(params);
-    //       if (resultUpdatePemeriksaan.affected_rows > 0) {
-    //         Swal.fire({
-    //           icon: "success",
-    //           title: "Yeay...",
-    //           html: "Pemeriksaan berhasil di-<strong>Tolak</strong>!",
-    //         });
-    //         this.pemeriksaan = await this.getAllPemeriksaan();
-    //         return;
-    //       }
-    //     } else {
-    //       Swal.fire("Dibatalkan", "", "error");
-    //     }
-    //   });
-    // },
     async updatePemeriksaan(params) {
       const API_URL = "https://fathir-hasura.herokuapp.com/v1/graphql";
       const API_HEADERS = {
@@ -469,5 +441,15 @@ export default {
 
 strong {
   color: #8f546e;
+}
+
+.vdatetime-time-picker__list--hours
+  .vdatetime-time-picker__item:nth-child(-n + 7) {
+  display: none;
+}
+
+.vdatetime-time-picker__list--hours
+  .vdatetime-time-picker__item:nth-last-child(-n + 6) {
+  display: none;
 }
 </style>

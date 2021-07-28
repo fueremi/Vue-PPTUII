@@ -171,6 +171,27 @@ export default {
       return data.data.data.pptuii_user;
     },
   },
+  created(){
+    if (this.$store.state.session !== null) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        html: `
+          <p class="m-1">Anda telah Login! </p>
+          <p>Anda akan diarahkan ke <b>Halaman Home</b>! </p>`,
+      });
+      if( this.$store.state.session.role === 1){
+        this.$router.push({ name: "HomePasien" });
+      } else if ( this.$store.state.session.role === 2 ){
+        this.$router.push({ name: "HomeAdmin" });
+      } else if ( this.$store.state.session.role === 3){
+        this.$router.push({ name: "HomePsikolog" });
+      } else {
+        this.$store.state.session = null
+      }
+      return;
+    }
+  }
 };
 </script>
 

@@ -5,7 +5,9 @@
       <div class="d-flex flex-row align-items-start gap-3 mt-4">
         <div class="col-md-6 border p-3">
           <h4 class="text-center">List Booking Pemeriksaanmu</h4>
-          <button @click="onRefresh()" class="btn"><i class="fas fa-sync"></i> Refresh</button>
+          <button @click="onRefresh()" class="btn">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
           <div class="mb-4">
             <p class="mt-4" v-if="pemeriksaan.length === 0">
               Tidak ada list booking pemeriksaan dalam minggu ini.
@@ -68,12 +70,17 @@
                       >
                         Ubah Jadwal
                       </button>
-                      <button @click="onCancel(pemeriksaan.id)" class="btn">Cancel</button>
+                      <button @click="onCancel(pemeriksaan.id)" class="btn">
+                        Cancel
+                      </button>
                     </p>
                     <div class="my-2" v-if="pemeriksaan.status === 2">
+                      <small class="text-warning">Booking pemeriksaanmu di Rescheduled</small>
                       <div class="d-flex flex-row gap-2">
-                        <p><strong>Alasan:</strong></p>
-                        <p>{{ pemeriksaan.alasan }}</p>
+                        <p><small><strong>Alasan:</strong></small></p>
+                        <p>
+                          <small><span class="fst-italic">"{{ pemeriksaan.alasan }}"</span> - {{ pemeriksaan.pa_rel.nama }}</small>
+                        </p>
                       </div>
                       <button
                         data-bs-toggle="modal"
@@ -82,18 +89,31 @@
                       >
                         Atur Jadwal Rescheduled
                       </button>
-                      <button @click="onCancel(pemeriksaan.id)" class="btn">Cancel</button>
+                      <button @click="onCancel(pemeriksaan.id)" class="btn">
+                        Cancel
+                      </button>
                     </div>
                     <div class="my-2" v-if="pemeriksaan.status === 3">
-                      <p class="m-0">
-                        Booking pemeriksaan otomatis terhapus dalam 3 hari
+                      <p class="m-0 text-danger">
+                        <small
+                          >Booking pemeriksaan otomatis terhapus dalam 3
+                          hari</small
+                        >
                       </p>
                     </div>
                     <div class="my-2" v-if="pemeriksaan.status === 4">
                       <div class="d-flex flex-row gap-2">
-                        <p class="m-0"><strong>Admin:</strong></p>
+                        <p class="m-0">
+                          <small><strong>Di-Approved oleh:</strong></small>
+                        </p>
                         <p class="m-0">{{ pemeriksaan.pa_rel.nama }}</p>
                       </div>
+                      <p class="mt-2 mb-0 text-success lh-1">
+                        <small
+                          >Booking pemeriksaan sudah di-Approved. <br />
+                          Mohon untuk datang 15 menit sebelum jadwal</small
+                        >
+                      </p>
                     </div>
                   </div>
 
@@ -523,7 +543,9 @@ export default {
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          const resultUpdatePemeriksaan = await this.updateCancelRescheduledPemeriksaan(params);
+          const resultUpdatePemeriksaan = await this.updateCancelRescheduledPemeriksaan(
+            params
+          );
           if (resultUpdatePemeriksaan.affected_rows > 0) {
             Swal.fire({
               icon: "success",
@@ -559,9 +581,9 @@ export default {
 
       return data.data.data.update_pptuii_pemeriksaan;
     },
-    async onRefresh(){
-      this.pemeriksaan = await this.getDataPemeriksaan()
-    }
+    async onRefresh() {
+      this.pemeriksaan = await this.getDataPemeriksaan();
+    },
   },
   async created() {
     if (this.$store.state.session === null) {
@@ -616,5 +638,15 @@ h4 {
 .btn-primary:hover {
   background: #8f546e;
   opacity: 0.75;
+}
+
+.vdatetime-time-picker__list--hours
+  .vdatetime-time-picker__item:nth-child(-n + 7) {
+  display: none;
+}
+
+.vdatetime-time-picker__list--hours
+  .vdatetime-time-picker__item:nth-last-child(-n + 6) {
+  display: none;
 }
 </style>
