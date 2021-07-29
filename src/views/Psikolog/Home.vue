@@ -190,10 +190,16 @@
                           class="d-flex flex-column justify-content-start align-items-start"
                           v-else-if="idPsikolog === pemeriksaan.psikolog_id"
                         >
-                          <button class="btn btn-primary">
+                          <router-link
+                            :to="{ name: 'Dokumen', params: {id: pemeriksaan.id} }"
+                            class="btn btn-primary"
+                          >
                             Upload Pemeriksaan
-                          </button>
-                          <small>Untuk hasil dari pelayanan, silahkan upload disini</small>
+                          </router-link>
+                          <small
+                            >Untuk hasil dari pelayanan, silahkan upload
+                            disini</small
+                          >
                         </div>
                         <p v-else>
                           Pelayanan Pemeriksaan ini telah diambil oleh

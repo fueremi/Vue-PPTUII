@@ -6,8 +6,9 @@ import Kontak from '@/views/Kontak'
 import Login from '@/views/Login'
 import Register from '@/views/Register' 
 import HomePasien from '@/views/Pasien/Home'
-import HomeAdmin from '@/views/Admin/Home.vue'
-import HomePsikolog from '@/views/Psikolog/Home.vue'
+import HomeAdmin from '@/views/Admin/Home'
+import HomePsikolog from '@/views/Psikolog/Home'
+import Dokumen from '@/views/Psikolog/Dokumen'
 import Pemeriksaan from '../views/Pasien/Pemeriksaan.vue'
 
 Vue.use(VueRouter)
@@ -52,6 +53,11 @@ const routes = [
     path: '/psikolog',
     name: 'HomePsikolog',
     component: HomePsikolog
+  },
+  {
+    path: '/psikolog/dokumen/:id',
+    name: 'Dokumen',
+    component: Dokumen
   }
   // {
   //   path: '/services',
