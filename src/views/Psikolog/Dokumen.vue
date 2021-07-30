@@ -5,53 +5,41 @@
       <div class="row mt-5">
         <h3>Upload Hasil Pemeriksaan</h3>
 
+        <div v-if="files !== null" class="my-3 py-5">
+          <div>
+            <ul class="list-group w-50">
+              <li class="list-group-item" aria-current="true">
+                {{ files[0].name }}
+              </li>
+              <li class="list-group-item">
+                {{ (files[0].size / 1000).toFixed(2) }} kb
+              </li>
+              <li class="list-group-item">
+                <button @click="onPreview" class="btn btn-primary">
+                  Preview
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div
-          class="m-3 p-5 border"
           v-cloak
           @drop.prevent="addFile"
           @dragover.prevent
+          v-else
+          class="m-3 p-5 border d-flex flex-column justify-content-center align-items-center"
         >
-          <div v-if="files !== null">
-            <p>
-              {{ files[0].name }} {{ (files[0].size / 1000).toFixed(2) }} kb
-            </p>
-            <!-- <ul
-              class="m-0 d-flex flex-column justify-content-center align-items-center"
-            >
-              <i class="fas fa-upload fa-3x text-muted"></i>
-              <p class="my-3">Drag dan Drop file hasil pemeriksaan</p>
-              <hr />
-              <li v-for="(file, index) in files" :key="index">
-                <div class="d-flex justify-content-start align-items-center">
-                  {{ file[0].name }} ({{ file[0].size }} kb)
-                  <button
-                    @click="removeFile(file)"
-                    title="Remove"
-                    class="btn text-danger py-0"
-                  >
-                    x
-                  </button>
-                </div>
-              </li>
-            </ul> -->
-            <button @click="onPreview" class="btn btn-primary">Preview</button>
-          </div>
-          <div
-            v-else
-            class="d-flex flex-column justify-content-center align-items-center"
-          >
-            <i class="fas fa-upload fa-3x text-muted"></i>
-            <p class="my-3">Drag dan Drop file hasil pemeriksaan</p>
-          </div>
+          <i class="fas fa-upload fa-3x text-muted"></i>
+          <p class="my-3">Drag dan Drop file hasil pemeriksaan</p>
         </div>
       </div>
-      <button
-        class="btn btn-primary"
-        :disabled="uploadDisabled"
-        @click="upload"
-      >
-        Upload
-      </button>
+      <form @submit.prevent="onSubmit()">
+        <input
+          :disabled="uploadDisabled"
+          type="submit"
+          class="btn btn-primary"
+        />
+      </form>
     </div>
   </div>
 </template>
@@ -59,6 +47,7 @@
 <script>
 import HomeNavbar from "@/components/Home/Navbar";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default {
   name: "Dokumen",
@@ -69,6 +58,7 @@ export default {
     return {
       files: null,
       dokumen: "",
+      id: this.$route.params.id,
     };
   },
   computed: {
@@ -78,16 +68,6 @@ export default {
   },
   methods: {
     addFile(e) {
-      if (e.dataTransfer.files[0].type !== "application/pdf") {
-        Swal.fire({
-          icon: "error",
-          title: "Oops!",
-          html:
-            "Format dokumen yang diperbolehkan hanya <b>PDF, Word, and Excel</b>",
-        });
-        return;
-      }
-
       if (e.dataTransfer.files[0].size >= 1000000) {
         Swal.fire({
           icon: "error",
@@ -106,53 +86,85 @@ export default {
       };
       reader.readAsDataURL(payload);
     },
-    upload() {
-      let formData = new FormData();
-      this.files.forEach((f, x) => {
-        formData.append("file" + (x + 1), f);
+    onSubmit() {
+      Swal.fire({
+        title: "Dokumen",
+        icon: "info",
+        width: "50vw",
+        html: `<p>Apakah <b>Dokumen</b> yang Akan di-Upload sudah benar ?</p>
+          `,
+        showCancelButton: true,
+        confirmButtonText: `Benar`,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const resultNewDokumen = await this.addNewDokumen();
+          if (resultNewDokumen.affected_rows > 0) {
+            Swal.fire({
+              icon: "success",
+              title: "Yeay...",
+              html: "Dokumen berhasil di-<strong>Upload</strong>!",
+            });
+            this.$router.push({ name: "HomePsikolog" });
+          }
+        } else {
+          Swal.fire("Dibatalkan", "", "error");
+        }
       });
+    },
+    async addNewDokumen() {
+      const API_URL = "https://fathir-hasura.herokuapp.com/v1/graphql";
+      const API_HEADERS = {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": "3yYlj28KnyN4",
+      };
+      const API_QUERY = `
+        mutation MyMutation {
+          insert_pptuii_dokumen(
+            objects: {
+              nama: "${Date.now()}-${this.files[0].name}", 
+              dokumen: "${this.dokumen}", 
+              pemeriksaan_id: "${this.id}"
+            }
+          ) 
+          {
+            affected_rows
+          }
+        }
+      `;
+      const data = await axios.post(
+        API_URL,
+        { query: API_QUERY },
+        { headers: API_HEADERS }
+      );
 
-      fetch("https://httpbin.org/post", {
-        method: "POST",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log("done uploading", res);
-        })
-        .catch((e) => {
-          console.error(JSON.stringify(e.message));
-        });
+      return data.data.data.insert_pptuii_dokumen;
     },
     onPreview() {
-      // let pdfWindow = window.open("");
-      // pdfWindow.document.write(
-      //   `<html<head><title>"${this.files[0].name}"</title><style>body{margin: 0px;}iframe{border-width: 0px;}</style></head>`
-      // );
-      // pdfWindow.document.write(
-      //   `<body><embed width='100%' height='100%' src='${this.dokumen}#toolbar=0&navpanes=0&scrollbar=0'></embed></body></html>`
-      // );
-      var win = window.open(
-        "",
-        "Title",
-        "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=900,top=" +
-          (screen.height - 900) +
-          ",left=" +
-          (screen.width - 840)
-      );
-      win.document.body.innerHTML =
-        `<iframe src="${this.dokumen}" style="display:flex; position:absolute" width="100%" height="100%"></iframe>`;
-
-    //   var newWindow = window.open(
-    //     "",
-    //     "PDF",
-    //     "dependent=yes,locationbar=no,scrollbars=no,menubar=no,resizable,screenX=50,screenY=50,width=850,height=800"
-    //   );
-    //   newWindow.document.write(
-    //     `<html><body><center><a title="Download File" style="font-family: 'Verdana';color: #333;text-decoration: none;font-weight: 600;" download="File.PDF" href="${this.dokumen}">Download File</a></center><br><object style="display:initial; position:absolute" width=100% height=100% type="application/pdf" data="${this.dokumen}"><embed style="display:initial; position:absolute" type="application/pdf" src="${this.dokumen}" id="embed_pdf"></embed></object></body></html>`
-    //   );
-    //   newWindow.window.focus();
+      Swal.fire({
+        title: "Preview Dokumen Pemeriksaan",
+        heightAuto: true,
+        width: "90vw",
+        html: `<iframe height="100%" width="100%" src="${this.dokumen}"></iframe>`,
+        showCloseButton: true,
+        focusConfirm: false,
+        confirmButtonText: '<i class="fa fa-thumbs-up"></i> Great!',
+        confirmButtonAriaLabel: "Thumbs up, great!",
+      });
     },
   },
 };
 </script>
+
+<style scoped>
+.swal2-html-container {
+  height: 70vh;
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled {
+  color: white;
+  background: #8f546e;
+  border-color: #8f546e;
+}
+</style>

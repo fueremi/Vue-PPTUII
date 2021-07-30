@@ -175,6 +175,25 @@
                                 , {{ pemeriksaan.pps_rel.nama }}
                               </span>
                             </li>
+                            <div v-if="pemeriksaan.pd_rel.length > 0">
+                              <li
+                                class="list-group-item"
+                                v-for="pd in pemeriksaan.pd_rel"
+                                :key="pd.nama"
+                              >
+                                <small>{{ pd.nama }}</small>
+                                <a
+                                  class="ms-2"
+                                  :href="
+                                    `data:application/octet-stream;base64,${
+                                      pd.dokumen.split(',')[1]
+                                    }`
+                                  "
+                                  :download="pd.nama"
+                                  ><i class="fas fa-download"></i
+                                ></a>
+                              </li>
+                            </div>
                           </ul>
                         </div>
                       </div>
@@ -187,19 +206,34 @@
                           Saya ambil
                         </button>
                         <div
-                          class="d-flex flex-column justify-content-start align-items-start"
+                          class="w-100 d-flex flex-row justify-content-between align-items-end"
                           v-else-if="idPsikolog === pemeriksaan.psikolog_id"
                         >
-                          <router-link
-                            :to="{ name: 'Dokumen', params: {id: pemeriksaan.id} }"
-                            class="btn btn-primary"
+                          <div
+                            class="d-flex flex-column justify-content-start align-items-start"
                           >
-                            Upload Pemeriksaan
-                          </router-link>
-                          <small
-                            >Untuk hasil dari pelayanan, silahkan upload
-                            disini</small
-                          >
+                            <router-link
+                              :to="{
+                                name: 'Dokumen',
+                                params: { id: pemeriksaan.id },
+                              }"
+                              class="btn btn-primary"
+                            >
+                              Upload Pemeriksaan
+                            </router-link>
+                            <small
+                              >Untuk hasil dari pelayanan, silahkan upload
+                              disini</small
+                            >
+                          </div>
+                          <div>
+                            <button
+                              @click="onSelesai(pemeriksaan.id)"
+                              class="btn btn-success"
+                            >
+                              Selesai
+                            </button>
+                          </div>
                         </div>
                         <p v-else>
                           Pelayanan Pemeriksaan ini telah diambil oleh
@@ -294,6 +328,10 @@ export default {
             nama
             no_psikolog
           }
+          pd_rel{
+            nama
+            dokumen
+          }
         }
       }
       `;
@@ -360,6 +398,63 @@ export default {
     },
     async onRefresh() {
       this.pemeriksaan = await this.getApprovedPemeriksaan();
+    },
+    onSelesai(params) {
+      Swal.fire({
+        title: "Pemeriksaan",
+        icon: "info",
+        width: "50vw",
+        html: `
+          <p>Apakah anda yakin akan <strong class="text-success">Menyelesaikan</strong> Pemeriksaan ini?</p>
+          <small class='text-danger'><b>Warning!</b> Data pemeriksaan tidak dapat diubah setelah statusnya <b>Selesai</b>!</small>
+        `,
+        showCancelButton: true,
+        confirmButtonText: `Benar`,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const pemeriksaanSelesai = await this.updatePemeriksaanSelesai(params)
+          if ( pemeriksaanSelesai.affected_rows > 0 ){
+            Swal.fire({
+              icon: "success",
+              title: "Yeay...",
+              html: "Pemeriksaan ini berhasil anda <strong>Ambil</strong>!",
+            });
+            this.pemeriksaan = await this.getApprovedPemeriksaan();
+            return;
+          }
+        } else {
+          Swal.fire("Dibatalkan", "", "error");
+        }
+      });
+    },
+    async updatePemeriksaanSelesai(params) {
+      const API_URL = "https://fathir-hasura.herokuapp.com/v1/graphql";
+      const API_HEADERS = {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": "3yYlj28KnyN4",
+      };
+      const API_QUERY = `
+        mutation MyMutation {
+          update_pptuii_pemeriksaan(
+            where: {
+              id: {_eq: "${params}"}
+            }, 
+            _set: {
+              status: 6
+            }
+          ) {
+            affected_rows
+          }
+        }
+      `;
+      const data = await axios.post(
+        API_URL,
+        { query: API_QUERY },
+        { headers: API_HEADERS }
+      );
+
+      return data.data.data.update_pptuii_pemeriksaan;
     },
   },
   async created() {
