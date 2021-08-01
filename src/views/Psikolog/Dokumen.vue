@@ -74,6 +74,7 @@ export default {
           title: "Oops!",
           html: "Maksimal ukuran dokumen yang diupload adalah <b>1 MB</b>",
         });
+        return
       }
 
       this.createBase64(e.dataTransfer.files[0]);
@@ -152,6 +153,29 @@ export default {
         confirmButtonAriaLabel: "Thumbs up, great!",
       });
     },
+  },
+  created() {if (this.$store.state.session === null) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        html: `
+          <p class="m-1">Anda tidak memiliki hak akses! </p>
+          <p>Silahkan Login terlebih dahulu! </p>`,
+      });
+      this.$router.push({ name: "Login" });
+      return;
+    }
+    if (this.$store.state.session === null) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        html: `
+          <p class="m-1">Anda tidak memiliki hak akses! </p>
+          <p>Silahkan Login terlebih dahulu! </p>`,
+      });
+      this.$router.push({ name: "Login" });
+      return;
+    }
   },
 };
 </script>
