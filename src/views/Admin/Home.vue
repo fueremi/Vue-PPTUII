@@ -5,7 +5,9 @@
       <div class="d-flex flex-row gap-3 mt-4">
         <div class="col-md-8 border p-3">
           <h4 class="text-center">Booking Pelayanan</h4>
-          <button @click="onRefresh()" class="btn"><i class="fas fa-sync"></i> Refresh</button>
+          <button @click="onRefresh()" class="btn">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
           <div class="mb-4">
             <p class="mt-4" v-if="pemeriksaan.length === 0">
               Tidak ada list booking pemeriksaan dalam minggu ini.
@@ -213,7 +215,11 @@
                         <p><strong>Pemeriksaan Rescheduled!</strong></p>
                       </div>
                       <div v-else-if="pemeriksaan.status === 3" class="m-3">
-                        <p><strong>Pemeriksaan Canceled oleh <b>Pasien</b>!</strong></p>
+                        <p>
+                          <strong
+                            >Pemeriksaan Canceled oleh <b>Pasien</b>!</strong
+                          >
+                        </p>
                       </div>
                       <div v-else-if="pemeriksaan.status === 4" class="m-3">
                         <p><strong>Pemeriksaan Approved!</strong></p>
@@ -228,6 +234,77 @@
         <!-- <div class="col-md-6 border p-3">
           <h4 class="text-center">B</h4>
         </div> -->
+        <div class="col-md-4 border p-3">
+          <h4 class="text-center mb-5">Tambah Psikolog</h4>
+          <form class="mb-3">
+            <div class="mb-3">
+              <label for="no_psikolog" class="form-label"
+                >No Psikolog</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="no_psikolog"
+                placeholder="Nomor Psikolog"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="nama_psikolog" class="form-label"
+                >Nama</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="nama_psikolog"
+                placeholder="Nama Psikolog"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="email_psikolog" class="form-label"
+                >Email</label
+              >
+              <input
+                type="email"
+                class="form-control"
+                id="email_psikolog"
+                placeholder="Email Psikolog"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="username_psikolog" class="form-label"
+                >Username</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="username_psikolog"
+                placeholder="Email Psikolog"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label"
+                >Password</label
+              >
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="c_password" class="form-label"
+                >Confirm Password</label
+              >
+              <input
+                type="password"
+                class="form-control"
+                id="c_password"
+                placeholder="Confirm Password"
+              />
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -383,9 +460,9 @@ export default {
 
       return data.data.data.update_pptuii_pemeriksaan;
     },
-    async onRefresh(){
-      this.pemeriksaan = await this.getAllPemeriksaan()
-    }
+    async onRefresh() {
+      this.pemeriksaan = await this.getAllPemeriksaan();
+    },
   },
   async created() {
     if (this.$store.state.session === null) {
